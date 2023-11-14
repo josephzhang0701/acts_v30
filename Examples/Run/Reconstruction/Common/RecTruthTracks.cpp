@@ -105,8 +105,8 @@ int runRecTruthTracks(
   particleSelectorCfg.inputMeasurementParticlesMap =
       digiCfg.outputMeasurementParticlesMap;
   particleSelectorCfg.outputParticles = "particles_selected";
-  particleSelectorCfg.nHitsMin = 9;
-  particleSelectorCfg.ptMin = 500._MeV;
+  //particleSelectorCfg.nHitsMin = 9;
+  //particleSelectorCfg.ptMin = 500._MeV;
   sequencer.addAlgorithm(
       std::make_shared<TruthSeedSelector>(particleSelectorCfg, logLevel));
 
@@ -132,6 +132,7 @@ int runRecTruthTracks(
   // setup the fitter
   const double reverseFilteringMomThreshold = 0.0;
   TrackFittingAlgorithm::Config fitter;
+  fitter.calibrator = std::make_shared<PassThroughCalibrator>();
   fitter.inputMeasurements = digiCfg.outputMeasurements;
   fitter.inputSourceLinks = digiCfg.outputSourceLinks;
   fitter.inputProtoTracks = trackFinderCfg.outputProtoTracks;

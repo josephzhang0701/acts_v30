@@ -17,27 +17,28 @@ u = acts.UnitConstants
 
 if "__main__" == __name__:
     detector, trackingGeometry, decorators = acts.examples.TelescopeDetector.create(
-        bounds=[200, 200],
-        positions=[30, 60, 90, 120, 150, 180, 210, 240, 270],
+        bounds=[2000, 2000],
+        positions=[0, 130, 260, 390, 520, 650],
+		stereos=[0.05 * u.rad] * 6,
         binValue=2,
     )
 
-    field = acts.ConstantBField(acts.Vector3(0, 0, 2 * u.T))
+    field = acts.ConstantBField(acts.Vector3(0, 4 * u.T, 0))
 
     outputDir = Path.cwd() / "telescope_simulation"
     if not outputDir.exists():
         outputDir.mkdir()
 
-    for geant, postfix in [(False, "fatras"), (True, "geant4")]:
+    for geant, postfix in [(False, "fatras")]:
         rnd = acts.examples.RandomNumbers(seed=42)
 
-        s = acts.examples.Sequencer(events=1, numThreads=1, logLevel=acts.logging.INFO)
+        s = acts.examples.Sequencer(events=100, numThreads=-1, logLevel=acts.logging.INFO)
 
         addParticleGun(
             s,
-            EtaConfig(-10.0, 10.0),
+            EtaConfig(10.0, 10.1),
             PhiConfig(0.0, 360.0 * u.degree),
-            ParticleConfig(1000, acts.PdgParticle.eMuon, False),
+            ParticleConfig(2, acts.PdgParticle.eElectron, False),
             multiplicity=1,
             rnd=rnd,
             outputDirRoot=outputDir / postfix,
@@ -61,6 +62,7 @@ if "__main__" == __name__:
                 field,
                 rnd=rnd,
                 outputDirRoot=outputDir / postfix,
+                outputDirCsv=outputDir / postfix,
             )
 
         s.run()
