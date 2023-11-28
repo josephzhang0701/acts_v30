@@ -6,6 +6,8 @@ from typing import Optional
 import acts
 import acts.examples
 
+import math
+
 u = acts.UnitConstants
 
 
@@ -55,7 +57,7 @@ def runTruthTrackingKalman(
         )
         assert inputParticlePath.exists()
         s.addReader(
-            RootParticleReader(
+            acts.examples.RootParticleReader(
                 level=acts.logging.INFO,
                 filePath=str(inputParticlePath.resolve()),
                 particleCollection="particles_input",
@@ -63,13 +65,13 @@ def runTruthTrackingKalman(
             )
         )
 
-    addFatras(
-        s,
-        trackingGeometry,
-        field,
-        rnd=rnd,
-        enableInteractions=True,
-    )
+    # addFatras(
+    #     s,
+    #     trackingGeometry,
+    #     field,
+    #     rnd=rnd,
+    #     enableInteractions=True,
+    # )
 
     addDigitization(
         s,
@@ -86,8 +88,12 @@ def runTruthTrackingKalman(
         seedingAlgorithm=SeedingAlgorithm.TruthSmeared,
         rnd=rnd,
         truthSeedRanges=TruthSeedRanges(
-            pt=(500 * u.MeV, None),
-            nHits=(9, None),
+            pt=(30 * u.MeV, None),
+            nHits=(6, None),
+            eta=(0, 7.0),
+            rho=(0, 380 * u.mm),
+            z=(0, 190 * u.mm),
+            phi=(-math.pi, math.pi)
         ),
     )
 
