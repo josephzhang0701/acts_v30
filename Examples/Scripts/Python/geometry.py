@@ -19,16 +19,17 @@ import acts
 
 from acts import MaterialMapJsonConverter
 
+u = acts.UnitConstants
 
 def runGeometry(
     trackingGeometry,
     decorators,
     outputDir,
     events=1,
-    outputObj=True,
-    outputCsv=True,
+    outputObj=False,
+    outputCsv=False,
     outputJson=True,
-    outputRoot=True,
+    outputRoot=False,
 ):
 
     for ievt in range(events):
@@ -88,8 +89,20 @@ def runGeometry(
 
 
 if "__main__" == __name__:
-    detector, trackingGeometry, decorators = AlignedDetector.create()
+    # detector, trackingGeometry, decorators = AlignedDetector.create()
     # detector, trackingGeometry, decorators = GenericDetector.create()
     # detector, trackingGeometry, decorators = getOpenDataDetector(getOpenDataDetectorDirectory())
+    detector, trackingGeometry, decorators = acts.examples.TelescopeDetector.create(
+        positions=[7.905, 22.905, 38.905, 53.905, 89.905, 180.405],
+        stereos=[-0.05, 0.05, -0.05, 0.05, -0.05, 0.05],
+        offsets=[0, 0],
+        bounds=[255, 255],
+        thickness=0.15 * u.mm,
+        surfaceType=0,  # 0 for plane surface or 1 for disc surface.
+        binValue=2,
+    )
 
-    runGeometry(trackingGeometry, decorators, outputDir=os.getcwd())
+    runGeometry(trackingGeometry, decorators,
+                # outputDir=os.getcwd()
+                outputDir="/lustre/collider/zhangjunhua/Software/acts/source/Examples/Scripts/Python/x.json"
+                )

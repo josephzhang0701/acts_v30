@@ -6,18 +6,17 @@ from typing import Optional
 import acts
 import acts.examples
 
-import math
-
 u = acts.UnitConstants
 
-
 def runTruthTrackingKalman(
+    seedingConfig: dict,
+    particleSmearingSigmasConfig:dict,
     trackingGeometry: acts.TrackingGeometry,
     field: acts.MagneticFieldProvider,
     outputDir: Path,
     digiConfigFile: Path,
     directNavigation=False,
-    reverseFilteringMomThreshold=0 * u.GeV,
+    reverseFilteringMomThreshold=0 * u.MeV,
     s: acts.examples.Sequencer = None,
     inputParticlePath: Optional[Path] = None,
 ):
@@ -33,6 +32,15 @@ def runTruthTrackingKalman(
         SeedingAlgorithm,
         TruthSeedRanges,
         addKalmanTracks,
+        ParticleSmearingSigmas,
+        SeedFinderConfigArg,
+        SeedFinderOptionsArg,
+        TruthEstimatedSeedingAlgorithmConfigArg,
+        addAmbiguityResolution,
+        AmbiguityResolutionConfig,
+        addVertexFitting,
+        VertexFinder,
+        TrackSelectorConfig,
     )
 
     s = s or acts.examples.Sequencer(
@@ -85,16 +93,30 @@ def runTruthTrackingKalman(
         s,
         trackingGeometry,
         field,
-        seedingAlgorithm=SeedingAlgorithm.TruthSmeared,
+        # seedingAlgorithm=SeedingAlgorithm.TruthSmeared,
+        seedingAlgorithm=seedingConfig.get("algorithm", SeedingAlgorithm.TruthSmeared),
         rnd=rnd,
-        truthSeedRanges=TruthSeedRanges(
-            pt=(30 * u.MeV, None),
-            nHits=(6, None),
-            eta=(0, 7.0),
-            rho=(0, 380 * u.mm),
-            z=(0, 190 * u.mm),
-            phi=(-math.pi, math.pi)
+        particleSmearingSigmas=ParticleSmearingSigmas(
+            d0=particleSmearingSigmasConfig.get("d0"),                              # d0     = 0.01
+            d0PtA=particleSmearingSigmasConfig.get("d0PtA", 0),                     # d0PtA  = 0.001
+            d0PtB=particleSmearingSigmasConfig.get("d0PtB", 0),                     # d0PtB  = 0.001
+            z0=particleSmearingSigmasConfig.get("z0"),                              # z0     = 0.01
+            z0PtA=particleSmearingSigmasConfig.get("z0PtA", 0),                     # z0PtA  = 0.001
+            z0PtB=particleSmearingSigmasConfig.get("z0PtB", 0),                     # z0PtB  = 0.001
+            t0=particleSmearingSigmasConfig.get("t0", 0),                           # t0     = 0
+            phi=particleSmearingSigmasConfig.get("phi"),                            # phi    = 0.01
+            theta=particleSmearingSigmasConfig.get("theta"),                        # theta  = 0.01
+            pRel=particleSmearingSigmasConfig.get("pRel"),                          # pRel   = 0.02
         ),
+        truthSeedRanges=TruthSeedRanges(                 # truthSeedRanges=TruthSeedRanges(
+            pt=seedingConfig.get("pt"),                  #     pt=(30 * u.MeV, None),
+            nHits=seedingConfig.get("nHits"),            #     nHits=(6, None),
+            eta=seedingConfig.get("eta"),                #     eta=(0, 7.0),
+            rho=seedingConfig.get("rho"),                #     rho=(0, 380 * u.mm),
+            z=seedingConfig.get("z"),                    #     z=(0, 290 * u.mm),
+            phi=seedingConfig.get("phi")                 #     phi=(-math.pi, math.pi)
+        ),                                               # ),
+
     )
 
     addKalmanTracks(
@@ -105,6 +127,15 @@ def runTruthTrackingKalman(
         reverseFilteringMomThreshold,
     )
 
+    # addAmbiguityResolution(
+    #     s,
+    #     AmbiguityResolutionConfig(
+    #         maximumSharedHits=2,
+    #         nMeasurementsMin=3,
+    #         maximumIterations=1000,
+    #     ),
+    # )
+
     # Output
     s.addWriter(
         acts.examples.RootTrajectoryStatesWriter(
@@ -114,7 +145,7 @@ def runTruthTrackingKalman(
             inputSimHits="simhits",
             inputMeasurementParticlesMap="measurement_particles_map",
             inputMeasurementSimHitsMap="measurement_simhits_map",
-            filePath=str(outputDir / "trackstates_fitter.root"),
+            filePath=str(outputDir / "Jan10_pRel002_trackstates_fitter.root"),
         )
     )
 
@@ -124,31 +155,31 @@ def runTruthTrackingKalman(
             inputTrajectories="trajectories",
             inputParticles="truth_seeds_selected",
             inputMeasurementParticlesMap="measurement_particles_map",
-            filePath=str(outputDir / "tracksummary_fitter.root"),
+            filePath=str(outputDir / "Jan10_pRel002_tracksummary_fitter.root"),
         )
     )
 
-    s.addWriter(
-        acts.examples.TrackFinderPerformanceWriter(
-            level=acts.logging.INFO,
-            inputProtoTracks="sorted_truth_particle_tracks"
-            if directNavigation
-            else "truth_particle_tracks",
-            inputParticles="truth_seeds_selected",
-            inputMeasurementParticlesMap="measurement_particles_map",
-            filePath=str(outputDir / "performance_track_finder.root"),
-        )
-    )
-
-    s.addWriter(
-        acts.examples.TrackFitterPerformanceWriter(
-            level=acts.logging.INFO,
-            inputTrajectories="trajectories",
-            inputParticles="truth_seeds_selected",
-            inputMeasurementParticlesMap="measurement_particles_map",
-            filePath=str(outputDir / "performance_track_fitter.root"),
-        )
-    )
+    # s.addWriter(
+    #     acts.examples.TrackFinderPerformanceWriter(
+    #         level=acts.logging.INFO,
+    #         inputProtoTracks="sorted_truth_particle_tracks"
+    #         if directNavigation
+    #         else "truth_particle_tracks",
+    #         inputParticles="truth_seeds_selected",
+    #         inputMeasurementParticlesMap="measurement_particles_map",
+    #         filePath=str(outputDir / "performance_track_finder.root"),
+    #     )
+    # )
+    #
+    # s.addWriter(
+    #     acts.examples.TrackFitterPerformanceWriter(
+    #         level=acts.logging.INFO,
+    #         inputTrajectories="trajectories",
+    #         inputParticles="truth_seeds_selected",
+    #         inputMeasurementParticlesMap="measurement_particles_map",
+    #         filePath=str(outputDir / "performance_track_fitter.root"),
+    #     )
+    # )
 
     return s
 

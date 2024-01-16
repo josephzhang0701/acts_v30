@@ -61,7 +61,8 @@ struct BetheHeitler {
     std::gamma_distribution<double> gDist(slab.thicknessInX0() / std::log(2.0),
                                           1.0);
 
-    const auto u = gDist(generator);
+    //const auto u = gDist(generator);
+    const float u = (gDist(generator) < 1e-10f) ? 0.0f : static_cast<float>(gDist(generator));
     const auto z = std::exp(-u);  // MARK: fpeMask(FLTUND, 1, #2346)
     const auto sampledEnergyLoss =
         std::abs(scaleFactor * particle.energy() * (z - 1.));

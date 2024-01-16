@@ -99,7 +99,7 @@ struct SeedFinderConfig {
 
   // tolerance parameter used to check the compatibility of SPs coordinates in
   // xyz
-  float toleranceParam = 1.1 * Acts::UnitConstants::mm;
+  float toleranceParam = 50 * Acts::UnitConstants::um;
 
   // Parameter which can loosen the tolerance of the track seed to form to a
   // helix, useful for (e.g.) misaligned seeding

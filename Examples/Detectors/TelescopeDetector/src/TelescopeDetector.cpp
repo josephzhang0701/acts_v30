@@ -21,10 +21,14 @@ auto ActsExamples::Telescope::TelescopeDetector::finalize(
     /*mdecorator*/) -> std::pair<TrackingGeometryPtr, ContextDecorators> {
   DetectorElement::ContextType nominalContext;
 
-  if (cfg.surfaceType > 1) {
+//  if (cfg.surfaceType > 1) {
+//    throw std::invalid_argument(
+//        "The surface type could either be 0 for plane surface or 1 for disc "
+//        "surface.");
+//  }
+  if (cfg.surfaceType > 0) {
     throw std::invalid_argument(
-        "The surface type could either be 0 for plane surface or 1 for disc "
-        "surface.");
+        "The surface type must be 0 for plane surface!" );
   }
   if (cfg.binValue > 2) {
     throw std::invalid_argument("The axis value could only be 0, 1, or 2.");
