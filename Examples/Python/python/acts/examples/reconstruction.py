@@ -245,13 +245,13 @@ def addSeeding(
 
     if truthSeedRanges is not None:
         selectedParticles = "truth_seeds_selected"
-        # addSeedingTruthSelection(
-        #     s,
-        #     inputParticles,
-        #     selectedParticles,
-        #     truthSeedRanges,
-        #     logLevel,
-        # )
+        addSeedingTruthSelection(
+            s,
+            inputParticles,
+            selectedParticles,
+            truthSeedRanges,
+            logLevel,
+        )
     else:
         selectedParticles = inputParticles
 

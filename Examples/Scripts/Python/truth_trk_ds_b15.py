@@ -21,10 +21,10 @@ u = acts.UnitConstants
 
 if "__main__" == __name__:
     detector, trackingGeometry, decorators = acts.examples.TelescopeDetector.create(
-        # positions=[-607.73, -507.73, -407.73, -307.73, -207.73, -107.73, -7.73],
-        # stereos=[0.05, -0.05, 0.05, -0.05, 0.05, -0.05, 0.05],
-        positions=[7.905, 22.905, 38.905, 53.905, 89.905, 180.405],
-        stereos=[-0.05, 0.05, -0.05, 0.05, -0.05, 0.05],
+        positions=[-607.7550, -507.7550, -407.7550, -307.7550, -207.7550, -107.7550, -7.7550],
+        stereos=[0.05, -0.05, 0.05, -0.05, 0.05, -0.05, 0.05],
+        # positions=[7.905, 22.905, 38.905, 53.905, 89.905, 180.405],
+        # stereos=[-0.05, 0.05, -0.05, 0.05, -0.05, 0.05],
         offsets=[0, 0],
         bounds=[255, 255],
         thickness=0.15 * u.mm,
@@ -36,10 +36,11 @@ if "__main__" == __name__:
 
     field = acts.ConstantBField(acts.Vector3(0, -1.5 * u.T, 0))
 
-    outputDir = Path("/lustre/collider/zhangjunhua/Software/acts/run/Jan_2_DS15e3")
+    inputDir = Path("/lustre/collider/zhangjunhua/Software/acts/run/TruthSeedJan17")
+    outputDir = Path("/lustre/collider/zhangjunhua/Software/acts/run/TruthSeedJan17/tag")
     # outputDir = Path.cwd() / "Nov28telescope_simulation"
-    # if not outputDir.exists():
-    #     outputDir.mkdir()
+    if not outputDir.exists():
+        outputDir.mkdir()
 
     ##rnd = acts.examples.RandomNumbers(seed=42)
     from acts.examples import (
@@ -47,13 +48,13 @@ if "__main__" == __name__:
         RootParticleReader,
     )
     s = acts.examples.Sequencer(
-        # events=1000,
+        events=100,
         numThreads=1, logLevel=acts.logging.INFO
     )
     s.addReader(
         RootSimHitReader(
             level=acts.logging.INFO,
-            filePath=outputDir / "trk1X_DigY_hits.root",
+            filePath=inputDir / "dp_tag_hits.root",
             treeName="hits",
             simHitCollection="simhits",
         )
@@ -61,19 +62,19 @@ if "__main__" == __name__:
     s.addReader(
         RootParticleReader(
             level=acts.logging.INFO,
-            filePath=outputDir / "Jan09_particles.root",
+            filePath=inputDir / "dp_tag_particles.root",
             particleCollection="particles",
             orderedEvents=False,
         )
     )
 
     seedingConfig = {
-        "algorithm": SeedingAlgorithm.Default,
-        "pt": (30 * u.keV, None),
-        "nHits": (3, None),
+        "algorithm": SeedingAlgorithm.TruthSmeared,
+        "pt": (0.0, None),
+        "nHits": (3, 100),
         "eta": (-7.0, 7.0),
-        "rho": (0 * u.mm, 400 * u.mm),
-        "z": (0, 200 * u.mm),
+        "rho": (-10.0 * u.m, 10.0 * u.m),
+        "z": (-10.0 * u.m, 10.0 * u.m),
         "phi": (-math.pi, math.pi),
     }
 
@@ -100,5 +101,5 @@ if "__main__" == __name__:
         directNavigation=False,
         reverseFilteringMomThreshold=0 * u.MeV,
         s=s,
-        inputParticlePath=outputDir / "Jan09_particles.root",
+        inputParticlePath=inputDir / "dp_tag_particles.root",
     ).run()

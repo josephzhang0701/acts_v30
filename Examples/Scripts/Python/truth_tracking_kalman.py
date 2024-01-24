@@ -97,16 +97,16 @@ def runTruthTrackingKalman(
         seedingAlgorithm=seedingConfig.get("algorithm", SeedingAlgorithm.TruthSmeared),
         rnd=rnd,
         particleSmearingSigmas=ParticleSmearingSigmas(
-            d0=particleSmearingSigmasConfig.get("d0"),                              # d0     = 0.01
-            d0PtA=particleSmearingSigmasConfig.get("d0PtA", 0),                     # d0PtA  = 0.001
-            d0PtB=particleSmearingSigmasConfig.get("d0PtB", 0),                     # d0PtB  = 0.001
-            z0=particleSmearingSigmasConfig.get("z0"),                              # z0     = 0.01
-            z0PtA=particleSmearingSigmasConfig.get("z0PtA", 0),                     # z0PtA  = 0.001
-            z0PtB=particleSmearingSigmasConfig.get("z0PtB", 0),                     # z0PtB  = 0.001
-            t0=particleSmearingSigmasConfig.get("t0", 0),                           # t0     = 0
-            phi=particleSmearingSigmasConfig.get("phi"),                            # phi    = 0.01
-            theta=particleSmearingSigmasConfig.get("theta"),                        # theta  = 0.01
-            pRel=particleSmearingSigmasConfig.get("pRel"),                          # pRel   = 0.02
+            d0=particleSmearingSigmasConfig.get("d0"),                             
+            d0PtA=particleSmearingSigmasConfig.get("d0PtA", 0),                    
+            d0PtB=particleSmearingSigmasConfig.get("d0PtB", 0),                    
+            z0=particleSmearingSigmasConfig.get("z0"),                             
+            z0PtA=particleSmearingSigmasConfig.get("z0PtA", 0),                    
+            z0PtB=particleSmearingSigmasConfig.get("z0PtB", 0),                    
+            t0=particleSmearingSigmasConfig.get("t0", 0),                          
+            phi=particleSmearingSigmasConfig.get("phi"),                           
+            theta=particleSmearingSigmasConfig.get("theta"),                       
+            pRel=particleSmearingSigmasConfig.get("pRel"),                         
         ),
         truthSeedRanges=TruthSeedRanges(                 # truthSeedRanges=TruthSeedRanges(
             pt=seedingConfig.get("pt"),                  #     pt=(30 * u.MeV, None),
@@ -116,7 +116,7 @@ def runTruthTrackingKalman(
             z=seedingConfig.get("z"),                    #     z=(0, 290 * u.mm),
             phi=seedingConfig.get("phi")                 #     phi=(-math.pi, math.pi)
         ),                                               # ),
-
+        logLevel=acts.logging.VERBOSE,
     )
 
     addKalmanTracks(
@@ -125,6 +125,7 @@ def runTruthTrackingKalman(
         field,
         directNavigation,
         reverseFilteringMomThreshold,
+        logLevel=acts.logging.INFO,
     )
 
     # addAmbiguityResolution(
@@ -141,11 +142,12 @@ def runTruthTrackingKalman(
         acts.examples.RootTrajectoryStatesWriter(
             level=acts.logging.INFO,
             inputTrajectories="trajectories",
-            inputParticles="truth_seeds_selected",
+            # inputParticles="truth_seeds_selected",
+            inputParticles="particles_input",
             inputSimHits="simhits",
             inputMeasurementParticlesMap="measurement_particles_map",
             inputMeasurementSimHitsMap="measurement_simhits_map",
-            filePath=str(outputDir / "Jan10_pRel002_trackstates_fitter.root"),
+            filePath=str(outputDir / "trackstates_fitter.root"),
         )
     )
 
@@ -155,7 +157,7 @@ def runTruthTrackingKalman(
             inputTrajectories="trajectories",
             inputParticles="truth_seeds_selected",
             inputMeasurementParticlesMap="measurement_particles_map",
-            filePath=str(outputDir / "Jan10_pRel002_tracksummary_fitter.root"),
+            filePath=str(outputDir / "tracksummary_fitter.root"),
         )
     )
 
