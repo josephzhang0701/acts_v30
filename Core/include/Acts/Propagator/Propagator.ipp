@@ -11,6 +11,7 @@
 #include "Acts/Propagator/detail/LoopProtection.hpp"
 
 #include <type_traits>
+#include <typeinfo>
 
 template <typename S, typename N>
 template <typename result_t, typename propagator_state_t>
@@ -18,10 +19,12 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
                                             result_t& result) const
     -> Result<void> {
   // Pre-stepping call to the navigator and action list
-  ACTS_VERBOSE("Entering propagation.");
+  ACTS_DEBUG("Entering propagation.");
 
   // Navigator initialize state call
   m_navigator.initialize(state, m_stepper);
+  ACTS_DEBUG("Step state looks like: " <<  typeid(state).name() );
+
   // Pre-Stepping call to the action list
   state.options.actionList(state, m_stepper, m_navigator, result, logger());
   // assume negative outcome, only set to true later if we actually have
@@ -34,7 +37,7 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
   if (!state.options.abortList(state, m_stepper, m_navigator, result,
                                logger())) {
     // Stepping loop
-    ACTS_VERBOSE("Starting stepping loop.");
+    ACTS_DEBUG("Starting stepping loop.");
 
     terminatedNormally = false;  // priming error condition
 
@@ -48,7 +51,7 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
         // Accumulate the path length
         double s = *res;
         result.pathLength += s;
-        ACTS_VERBOSE("Step with size = " << s << " performed");
+        ACTS_DEBUG("Step with size = " << s << " performed");
       } else {
         ACTS_ERROR("Step failed with " << res.error() << ": "
                                        << res.error().message());
@@ -66,7 +69,7 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
       }
     }
   } else {
-    ACTS_VERBOSE("Propagation terminated without going into stepping loop.");
+    ACTS_DEBUG("Propagation terminated without going into stepping loop.");
   }
 
   // if we didn't terminate normally (via aborters) set navigation break.
@@ -80,7 +83,7 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
   }
 
   // Post-stepping call to the action list
-  ACTS_VERBOSE("Stepping loop done.");
+  ACTS_DEBUG("Stepping loop done.");
   state.options.actionList(state, m_stepper, m_navigator, result, logger());
 
   // return progress flag here, decide on SUCCESS later

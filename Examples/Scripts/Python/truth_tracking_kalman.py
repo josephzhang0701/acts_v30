@@ -125,7 +125,7 @@ def runTruthTrackingKalman(
         field,
         directNavigation,
         reverseFilteringMomThreshold,
-        logLevel=acts.logging.INFO,
+        logLevel=acts.logging.DEBUG,
     )
 
     # addAmbiguityResolution(
