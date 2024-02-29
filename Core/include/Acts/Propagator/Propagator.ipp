@@ -41,6 +41,8 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
 
     terminatedNormally = false;  // priming error condition
 
+    int count = 0; //Count the following loop
+
     // Propagation loop : stepping
     for (; result.steps < state.options.maxSteps; ++result.steps) {
       // Pre-Stepping: target setting
@@ -52,6 +54,10 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
         double s = *res;
         result.pathLength += s;
         ACTS_DEBUG("Step with size = " << s << " performed");
+        //打印step迭代次数 result.pathLength
+        ACTS_DEBUG("Step with pathLength = " << result.pathLength << " performed");
+        count++;
+        ACTS_DEBUG("The number of times this cycle is: " << count);
       } else {
         ACTS_ERROR("Step failed with " << res.error() << ": "
                                        << res.error().message());

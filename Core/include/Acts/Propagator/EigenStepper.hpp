@@ -25,6 +25,7 @@
 #include "Acts/Propagator/detail/SteppingHelper.hpp"
 #include "Acts/Utilities/Intersection.hpp"
 #include "Acts/Utilities/Result.hpp"
+#include "Acts/Utilities/Logger.hpp"
 
 #include <cmath>
 #include <functional>
@@ -418,6 +419,12 @@ class EigenStepper {
 
   /// Overstep limit
   double m_overstepLimit;
+
+ private:
+  /// The logger instance
+  //std::unique_ptr<const Logger> m_logger;
+  const Logger& logger() const { return *m_logger; }
+  std::shared_ptr<const Logger> m_logger;
 };
 }  // namespace Acts
 
