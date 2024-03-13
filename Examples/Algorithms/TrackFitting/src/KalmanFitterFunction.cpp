@@ -162,12 +162,13 @@ ActsExamples::makeKalmanFitterFunction(
   cfg.resolvePassive = false;
   cfg.resolveMaterial = true;
   cfg.resolveSensitive = true;
-  Acts::Navigator navigator(cfg, logger.cloneWithSuffix("Navigator", Acts::Logging::VERBOSE)
-                            //logger.cloneWithSuffix("Navigator")
+  Acts::Navigator navigator(cfg,
+                            //logger.cloneWithSuffix("Navigator", Acts::Logging::VERBOSE)
+                            logger.cloneWithSuffix("Navigator")
                              );
   Propagator propagator(stepper, std::move(navigator),
-                        logger.cloneWithSuffix("Propagator", Acts::Logging::VERBOSE)
-                        //logger.cloneWithSuffix("Propagator")
+                        //logger.cloneWithSuffix("Propagator", Acts::Logging::VERBOSE)
+                        logger.cloneWithSuffix("Propagator")
                         );
   Fitter trackFitter(std::move(propagator), logger.cloneWithSuffix("Fitter"));
 

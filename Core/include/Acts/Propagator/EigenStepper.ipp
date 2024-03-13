@@ -185,11 +185,13 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
               std::abs(sd.kQoP[0] - sd.kQoP[1] - sd.kQoP[2] + sd.kQoP[3]));
     error_estimate = std::max(error_estimate, 1e-20);
 
-    std::cout << "[EigenStepper::tryRungeKuttaStep(): RKN parameters] "
-                 "Estimated error by RKN method: " << error_estimate
-              << "; k1 = " << sd.k1 << "; k2 = " << sd.k2
-              << "; k3 = "  << sd.k3 << "; k4 = "  << sd.k4 << "; h = " << h << std::endl;
-
+//    std::cout << "[EigenStepper::tryRungeKuttaStep(): RKN parameters] "
+//                 "Estimated error by RKN method: " << error_estimate
+//              << "; k1 = ( " << sd.k1(0) << ", " << sd.k1(1) << ", " << sd.k1(2) << ")"
+//              << "; k2 = ( " << sd.k2(0) << ", " << sd.k2(1) << ", " << sd.k2(2) << ")"
+//              << "; k3 = ( " << sd.k3(0) << ", " << sd.k3(1) << ", " << sd.k3(2) << ")"
+//              << "; k4 = ( " << sd.k4(0) << ", " << sd.k4(1) << ", " << sd.k4(2) << ")"
+//              << "; h = " << h << std::endl;
     return success(error_estimate <= state.options.tolerance);
   };
 
@@ -223,22 +225,22 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
 
     // If the number of stepSize iterations exceeds 9950,
     // the number of iterations will be output.
-    if (nStepTrials < 3) {
-      // First 3 iterations
-      std::cout << "[EigenStepper::step(): Invoking tryRungeKuttaStep(), RKN nStep Trialing] "
-                 "Iterated stepSize counted: " << nStepTrials
-                << "; Iterated state.stepping.stepSize.value() is: "
-                << state.stepping.stepSize.value()
-                << "; Iterated direction is: " << state.options.direction << std::endl;
-    }
-    if (nStepTrials > 9950) {
-      // Too many trials, have to output
-      std::cout << "[EigenStepper::step(): Invoking tryRungeKuttaStep(), RKN nStep Trialing] "
-                   "Iterated stepSize counted: " << nStepTrials
-                << "; Iterated state.stepping.stepSize.value() is: "
-                << state.stepping.stepSize.value()
-                << "; Iterated direction is: " << state.options.direction << std::endl;
-    }
+//    if (nStepTrials < 3) {
+//      // First 3 iterations
+//      std::cout << "[EigenStepper::step(): Invoking tryRungeKuttaStep(), RKN nStep Trialing] "
+//                 "Iterated stepSize counted: " << nStepTrials
+//                << "; Iterated state.stepping.stepSize.value() is: "
+//                << state.stepping.stepSize.value()
+//                << "; Iterated direction is: " << state.options.direction << std::endl;
+//    }
+//    if (nStepTrials > 9950) {
+//      // Too many trials, have to output
+//      std::cout << "[EigenStepper::step(): Invoking tryRungeKuttaStep(), RKN nStep Trialing] "
+//                   "Iterated stepSize counted: " << nStepTrials
+//                << "; Iterated state.stepping.stepSize.value() is: "
+//                << state.stepping.stepSize.value()
+//                << "; Iterated direction is: " << state.options.direction << std::endl;
+//    }
 
     // If the parameter is off track too much or given stepSize is not
     // appropriate
@@ -292,8 +294,15 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
   }
 
   state.stepping.stepSize.nStepTrials = nStepTrials;
-  std::cout  << "[EigenStepper::step(): RKN update] Updated position is: " << state.stepping.pars.template segment<3>(eFreePos0)
-      << "; Updated direction (not normalized) is: " << state.stepping.pars.template segment<3>(eFreeDir0) << std::endl;
+//  std::cout << "[EigenStepper::step(): RKN update] Updated position is: ("
+//            << state.stepping.pars.template segment<3>(eFreePos0)(0) << ", "
+//            << state.stepping.pars.template segment<3>(eFreePos0)(1) << ", "
+//            << state.stepping.pars.template segment<3>(eFreePos0)(2) << ") "
+//            << "; Updated direction (not normalized) is: "
+//            << state.stepping.pars.template segment<3>(eFreeDir0)(0) << ", "
+//            << state.stepping.pars.template segment<3>(eFreeDir0)(1) << ", "
+//            << state.stepping.pars.template segment<3>(eFreeDir0)(2) << ") "
+//  << std::endl;
 
   return h;
 }

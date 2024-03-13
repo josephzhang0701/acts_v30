@@ -125,7 +125,7 @@ def runTruthTrackingKalman(
         field,
         directNavigation,
         reverseFilteringMomThreshold,
-        logLevel=acts.logging.DEBUG,
+        logLevel=acts.logging.INFO,
     )
 
     # addAmbiguityResolution(
@@ -147,7 +147,7 @@ def runTruthTrackingKalman(
             inputSimHits="simhits",
             inputMeasurementParticlesMap="measurement_particles_map",
             inputMeasurementSimHitsMap="measurement_simhits_map",
-            filePath=str(outputDir / "trackstates_fitter.root"),
+            filePath=str(outputDir / "trackstates.root"),
         )
     )
 
@@ -157,7 +157,7 @@ def runTruthTrackingKalman(
             inputTrajectories="trajectories",
             inputParticles="truth_seeds_selected",
             inputMeasurementParticlesMap="measurement_particles_map",
-            filePath=str(outputDir / "tracksummary_fitter.root"),
+            filePath=str(outputDir / "tracksummary.root"),
         )
     )
 
