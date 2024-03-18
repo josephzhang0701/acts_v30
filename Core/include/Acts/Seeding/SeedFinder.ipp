@@ -10,6 +10,7 @@
 #include <cmath>
 #include <numeric>
 #include <type_traits>
+#include <iostream>
 
 namespace Acts {
 
@@ -127,6 +128,9 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
       continue;
     }
 
+    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+              << "space points of middle are: [" << spM->x() << '\t' << spM->y() << '\t' << spM->z() << '\t' << spM->radius() << "]" << std::endl;
+
     const float uIP = -1. / rM;
     const float cosPhiM = -spM->x() * uIP;
     const float sinPhiM = -spM->y() * uIP;
@@ -164,6 +168,10 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
         continue;
       }
     }
+
+//    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+//        << "Range of centralSeedConfirmationRange zSeedConf: " << m_config.centralSeedConfirmationRange.zMaxSeedConf
+//              << "  to  " << m_config.centralSeedConfirmationRange.zMinSeedConf << std::endl;
 
     // Iterate over middle-bottom dublets
     getCompatibleDoublets<Acts::SpacePointCandidateType::eBottom>(

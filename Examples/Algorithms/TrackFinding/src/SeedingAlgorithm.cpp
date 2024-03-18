@@ -310,7 +310,17 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
   }
 
   ACTS_DEBUG("Created " << seeds.size() << " track seeds from "
-                        << spacePointPtrs.size() << " space points");
+                        << spacePointPtrs.size() << " space points." );
+  ACTS_DEBUG("Selected spacepoint: " );
+  for (auto iseed :seeds) {
+    ACTS_DEBUG( "Each seed's quality is: " << iseed.seedQuality() );
+    for(auto isp : iseed.sp()) {
+      ACTS_DEBUG("Each sp: (" << isp->x() << ", " << isp->y() << ", " << isp->z() << "). "
+                 << "Var of r: " << isp->varianceR() );
+    }
+  }
+
+
 
   m_outputSeeds(ctx, SimSeedContainer{seeds});
   return ActsExamples::ProcessCode::SUCCESS;
