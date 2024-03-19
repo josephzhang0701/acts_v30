@@ -83,7 +83,6 @@ def runKalmanTrk(
     zMax=10 * u.mm
     impactMax=600 * u.mm
 
-
     # Run the seeding algorithm
     addSeeding(
         s,
@@ -94,10 +93,23 @@ def runKalmanTrk(
         seedingAlgorithm=SeedingAlgorithm.Default,
         truthSeedRanges=None,
         seedFinderConfigArg=SeedFinderConfigArg(
+            # SeedFinderConfigArg(maxSeedsPerSpM, cotThetaMax, sigmaScattering, radLengthPerSeed, minPt,
+            #       impactMax, deltaPhiMax, interactionPointCut, deltaZMax, maxPtScattering, zBinEdges, zBinsCustomLooping, rRangeMiddleSP,
+            #       useVariableMiddleSPRange, binSizeR, seedConfirmation, centralSeedConfirmationRange, forwardSeedConfirmationRange,
+            #       deltaR, deltaRBottomSP, deltaRTopSP, deltaRMiddleSPRange, collisionRegion, r, z, zOutermostLayers)
+            #   Defaults specified in Examples/Algorithms/TrackFinding/include/ActsExamples/TrackFinding/TrackParamsEstimationAlgorithm.hpp
+
+            # SeedFinderConfigArg(maxSeedsPerSpM, cotThetaMax, sigmaScattering, radLengthPerSeed, minPt,
+            #       impactMax, deltaPhiMax, interactionPointCut, deltaZMax, maxPtScattering, zBinEdges, zBinsCustomLooping,
+            #       skipZMiddleBinSearch, rRangeMiddleSP, useVariableMiddleSPRange, binSizeR, seedConfirmation,
+            #       centralSeedConfirmationRange, forwardSeedConfirmationRange, deltaR, deltaRBottomSP, deltaRTopSP,
+            #       deltaRMiddleSPRange, collisionRegion, r, z, zOutermostLayers)
+            #   SeedFinderConfig settings. deltaR, deltaRBottomSP, deltaRTopSP, deltaRMiddleSPRange, collisionRegion, r, z, zOutermostLayers are ranges specified as a tuple of (min,max). beamPos is specified as (x,y).
+            #       Defaults specified in Core/include/Acts/Seeding/SeedFinderConfig.hpp
             maxSeedsPerSpM=1,   # for how many seeds can one SpacePoint be the middle SpacePoint?
             cotThetaMax=10,
             sigmaScattering=5, # how many sigmas of scattering angle should be considered?
-            # radLengthPerSeed=0.01, # average radiation lengths of material on the length of a seed. used for scattering
+            radLengthPerSeed=0.05, # average radiation lengths of material on the length of a seed. used for scattering
             minPt=150 * u.MeV,
             impactMax=impactMax,
             rRangeMiddleSP=[[0 * u.mm, 130 * u.mm],
@@ -107,6 +119,9 @@ def runKalmanTrk(
             r=(rMin, rMax),
             z=(zMin, zMax),
             deltaRMiddleSPRange=(deltaRMin, deltaRMax),
+            binSizeR=0.05 * u.mm,
+            deltaZMax=5 * u.mm,
+            useVariableMiddleSPRange=True,
         ),  # Set SeedFinderConfigArg parameters
 
         seedFinderOptionsArg=SeedFinderOptionsArg(
@@ -139,7 +154,7 @@ def runKalmanTrk(
             phiBinDeflectionCoverage=10,
             phi=(-0.5 * math.pi, 0.5 * math.pi),
             impactMax=impactMax,
-            maxPhiBins=1000,
+            maxPhiBins=10000,
         ),
 
         # SeedingAlgorithmConfigArg(allowSeparateRMax, zBinNeighborsTop, zBinNeighborsBottom, numPhiNeighbors)

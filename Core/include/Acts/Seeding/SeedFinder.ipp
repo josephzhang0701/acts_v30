@@ -75,11 +75,15 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
   // Fill
   // bottoms
   for (const std::size_t idx : bottomSPsIdx) {
+    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+              << "bottomSPsIdx is: " << idx << std::endl;
     state.bottomNeighbours.emplace_back(
         grid, idx, middleSPs.front()->radius() - m_config.deltaRMaxBottomSP);
   }
   // tops
   for (const std::size_t idx : topSPsIdx) {
+    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+              << "topSPsIdx is: " << idx << std::endl;
     state.topNeighbours.emplace_back(
         grid, idx, middleSPs.front()->radius() + m_config.deltaRMinTopSP);
   }
@@ -260,6 +264,10 @@ SeedFinder<external_spacepoint_t, platform_t>::getCompatibleDoublets(
     // the iterator so we don't need to look at the other SPs again
     for (; min_itr != otherSPs.end(); ++min_itr) {
       const auto& otherSP = *min_itr;
+      std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+        << "otherSP->radius(): " << otherSP->radius() <<'\t'
+        << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
+        << std::endl;
       if constexpr (candidateType == Acts::SpacePointCandidateType::eBottom) {
         // if r-distance is too big, try next SP in bin
         if ((rM - otherSP->radius()) <= deltaRMaxSP) {

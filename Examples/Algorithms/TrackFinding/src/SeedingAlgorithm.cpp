@@ -267,6 +267,11 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
           m_cfg.seedFinderConfig.deltaRMiddleMinSPRange,
       up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange);
 
+  ACTS_DEBUG("up is: " << up << '\t' <<
+             "std::floor(rRangeSPExtent.min(Acts::binR) / 2) * 2 + m_cfg.seedFinderConfig.deltaRMiddleMinSPRange" <<
+             std::floor(rRangeSPExtent.min(Acts::binR) / 2) * 2 + m_cfg.seedFinderConfig.deltaRMiddleMinSPRange << '\t' <<
+             "up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange" << up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange);
+
   // run the seeding
   static thread_local SimSeedContainer seeds;
   seeds.clear();
