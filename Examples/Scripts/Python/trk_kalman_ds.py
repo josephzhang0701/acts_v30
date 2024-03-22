@@ -81,7 +81,7 @@ def runKalmanTrk(
     deltaRMax=199 * u.mm
     zMin=-10 * u.mm
     zMax=10 * u.mm
-    impactMax=600 * u.mm
+    impactMax=300 * u.mm
 
     # Run the seeding algorithm
     addSeeding(
@@ -112,8 +112,7 @@ def runKalmanTrk(
             radLengthPerSeed=0.05, # average radiation lengths of material on the length of a seed. used for scattering
             minPt=150 * u.MeV,
             impactMax=impactMax,
-            rRangeMiddleSP=[[0 * u.mm, 130 * u.mm],
-                            [0 * u.mm, 230 * u.mm]],
+            rRangeMiddleSP=[[0 * u.mm, 230 * u.mm]],
             deltaR=(deltaRMin, deltaRMax),
             collisionRegion=(zMin/10, zMax/10), # limiting location of collision region in z
             r=(rMin, rMax),
@@ -121,7 +120,7 @@ def runKalmanTrk(
             deltaRMiddleSPRange=(deltaRMin, deltaRMax),
             binSizeR=0.05 * u.mm,
             deltaZMax=5 * u.mm,
-            useVariableMiddleSPRange=True,
+            useVariableMiddleSPRange=False,
         ),  # Set SeedFinderConfigArg parameters
 
         seedFinderOptionsArg=SeedFinderOptionsArg(
@@ -148,12 +147,11 @@ def runKalmanTrk(
         # SpacePointGridConfigArg(rMax, zBinEdges, phiBinDeflectionCoverage, phi, maxPhiBins, impactMax)
             # Defaults specified in Core/include/Acts/Seeding/SpacePointGrid.hpp
         spacePointGridConfigArg = SpacePointGridConfigArg(
-            rMax=rMax,
             deltaRMax=deltaRMax,
             zBinEdges=[zMin, zMax],
             phiBinDeflectionCoverage=10,
             phi=(-0.5 * math.pi, 0.5 * math.pi),
-            impactMax=impactMax,
+            # impactMax=impactMax,
             maxPhiBins=10000,
         ),
 
