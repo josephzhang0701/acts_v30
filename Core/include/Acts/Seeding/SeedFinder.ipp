@@ -45,6 +45,7 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
     const sp_range_t& bottomSPsIdx, const std::size_t middleSPsIdx,
     const sp_range_t& topSPsIdx,
     const Acts::Range1D<float>& rMiddleSPRange) const {
+  std::cout << "~~~~~~~~Function createSeedsForGroup() is executed...~~~~~~~~" << std::endl;
   if (not options.isInInternalUnits) {
     throw std::runtime_error(
         "SeedFinderOptions not in ACTS internal units in SeedFinder");
@@ -77,7 +78,7 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
   for (const std::size_t idx : bottomSPsIdx) {
     std::cout << "[In L. " <<  __LINE__ << ' ' << __func__ << " ]" << '\t'
               << "bottomSPsIdx is: " << idx << '\t'
-              << "bottomNeighbours r, see: middleSPs.front()->radius() - m_config.deltaRMaxBottomSP ==> "
+              << "bottomNeighbours r, see: R_middleSPs - deltaRMaxBottomSP ==> "
               << middleSPs.front()->radius() << " - " << m_config.deltaRMaxBottomSP << " = " << middleSPs.front()->radius() - m_config.deltaRMaxBottomSP
               << std::endl;
     state.bottomNeighbours.emplace_back(
@@ -87,7 +88,7 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
   for (const std::size_t idx : topSPsIdx) {
     std::cout << "[In L. " <<  __LINE__ << ' ' << __func__ << " ]" << '\t'
               << "topSPsIdx is: " << idx << '\t'
-              << "topNeighbours r, see: middleSPs.front()->radius() + m_config.deltaRMinTopSP ==> "
+              << "topNeighbours r, see: R_middleSPs + deltaRMinTopSP ==> "
               << middleSPs.front()->radius() << " + " << m_config.deltaRMinTopSP << " = " << middleSPs.front()->radius() + m_config.deltaRMinTopSP
               << std::endl;
     state.topNeighbours.emplace_back(
@@ -141,7 +142,7 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
       continue;
     }
 
-    std::cout << "=====[In " << __func__ << " ]" << '\t'
+    std::cout << "[In " << __func__ << " ]" << '\t'
               << "space points of middle are: [" << spM->x() << '\t' << spM->y() << '\t' << spM->z() << '\t' << spM->radius() << "]" << std::endl;
 
     const float uIP = -1. / rM;
@@ -274,6 +275,7 @@ SeedFinder<external_spacepoint_t, platform_t>::getCompatibleDoublets(
     // find the first SP inside the radius region of interest and update
     // the iterator so we don't need to look at the other SPs again
     for (; min_itr != otherSPs.end(); ++min_itr) {
+      std::cout << "~[Loop] at SeedFinder.ipp L." << __LINE__ << std::endl;
       const auto& otherSP = *min_itr;
       if constexpr (candidateType == Acts::SpacePointCandidateType::eBottom) {
         std::cout << "#######Find the first SP inside the radius region of interest [In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
@@ -303,11 +305,12 @@ SeedFinder<external_spacepoint_t, platform_t>::getCompatibleDoublets(
     otherSPCol.itr = min_itr;
 
     for (; min_itr != otherSPs.end(); ++min_itr) {
+      std::cout << "~[Loop] at SeedFinder.ipp L." << __LINE__ << std::endl;
       const auto& otherSP = *min_itr;
 
       if constexpr (candidateType == Acts::SpacePointCandidateType::eBottom) {
         deltaR = (rM - otherSP->radius());
-        std::cout << "=====update the iterator ?BOTTOM? In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+        std::cout << '\t' << "update the iterator ?BOTTOM? In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
                   << candidateType << " deltaR: " << deltaR <<'\t'
                   << "otherSP->radius(): " << otherSP->radius() <<'\t'
                   << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
@@ -497,11 +500,13 @@ inline void SeedFinder<external_spacepoint_t, platform_t>::filterCandidates(
   std::vector<std::size_t> sorted_bottoms(state.linCircleBottom.size());
   for (std::size_t i(0); i < sorted_bottoms.size(); ++i) {
     sorted_bottoms[i] = i;
+    std::cout << '\t' << '\t' << "sorted_bottoms[i] is: " << sorted_bottoms[i] << std::endl;
   }
 
   std::vector<std::size_t> sorted_tops(state.linCircleTop.size());
   for (std::size_t i(0); i < sorted_tops.size(); ++i) {
     sorted_tops[i] = i;
+    std::cout << '\t' << '\t' << "sorted_tops[i] is: " << sorted_tops[i] << std::endl;
   }
 
   if constexpr (detailedMeasurement ==
