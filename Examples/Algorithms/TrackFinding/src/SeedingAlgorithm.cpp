@@ -268,9 +268,9 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
       up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange);
 
   ACTS_DEBUG("up is: " << up << '\t' <<
-             "std::floor(rRangeSPExtent.min(Acts::binR) / 2) * 2 + m_cfg.seedFinderConfig.deltaRMiddleMinSPRange" <<
+             "rRangeSPExtent.min(Acts::binR) + deltaRMiddleMinSPRange" << '\t' <<
              std::floor(rRangeSPExtent.min(Acts::binR) / 2) * 2 + m_cfg.seedFinderConfig.deltaRMiddleMinSPRange << '\t' <<
-             "up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange" << up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange);
+             "up - deltaRMiddleMaxSPRange" << '\t' << up - m_cfg.seedFinderConfig.deltaRMiddleMaxSPRange);
 
   // run the seeding
   static thread_local SimSeedContainer seeds;
@@ -316,7 +316,7 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
 
   ACTS_DEBUG("Created " << seeds.size() << " track seeds from "
                         << spacePointPtrs.size() << " space points." );
-  ACTS_DEBUG("Selected spacepoint: " );
+  ACTS_DEBUG("===========================Selected spacepoint: " );
   for (auto iseed :seeds) {
     ACTS_DEBUG( "Each seed's quality is: " << iseed.seedQuality() );
     for(auto isp : iseed.sp()) {
@@ -324,8 +324,6 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
                  << "Var of r: " << isp->varianceR() );
     }
   }
-
-
 
   m_outputSeeds(ctx, SimSeedContainer{seeds});
   return ActsExamples::ProcessCode::SUCCESS;

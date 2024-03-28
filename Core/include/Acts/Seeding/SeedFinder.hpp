@@ -29,6 +29,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 namespace Acts {
 
@@ -176,6 +177,20 @@ class SeedFinder {
  private:
   Acts::SeedFinderConfig<external_spacepoint_t> m_config;
 };
+
+inline std::ostream& operator<<(std::ostream& os, SpacePointCandidateType candidateType) {
+  switch(candidateType) {
+    case SpacePointCandidateType::eBottom:
+      os << "eBottom";
+      break;
+    case SpacePointCandidateType::eTop:
+      os << "eTop";
+      break;
+    default:
+      os << "Unknown";
+  }
+  return os;
+}
 
 }  // namespace Acts
 

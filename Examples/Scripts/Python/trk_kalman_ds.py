@@ -75,13 +75,28 @@ def runKalmanTrk(
     )
 
     # variables that do not change for strip SPs:
-    rMin=0.000 * u.mm
-    rMax=650 * u.mm
+    rMin=0 * u.mm
+    rMax=620.00 * u.mm
     deltaRMin=1 * u.mm
-    deltaRMax=199 * u.mm
+    deltaRMax=150 * u.mm
     zMin=-10 * u.mm
     zMax=10 * u.mm
-    impactMax=300 * u.mm
+    impactMax=200.0 * u.mm
+    rRangeMiddleSP=[[0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm],
+                    [0 * u.mm, 230 * u.mm], [0 * u.mm, 230 * u.mm]]
+    zBinEdges=[-10.0, -2.5,
+               -1.0, -0.6, -0.4, -0.2, -0.1,
+               0.0,
+               0.1, 0.2, 0.4, 0.6, 1.0,
+               2.5, 10.0]
+    deltaRMiddleMinSPRange = 10 * u.mm
+    deltaRMiddleMaxSPRange = 10 * u.mm
+    seedConfirmation=True
 
     # Run the seeding algorithm
     addSeeding(
@@ -104,41 +119,48 @@ def runKalmanTrk(
             #       skipZMiddleBinSearch, rRangeMiddleSP, useVariableMiddleSPRange, binSizeR, seedConfirmation,
             #       centralSeedConfirmationRange, forwardSeedConfirmationRange, deltaR, deltaRBottomSP, deltaRTopSP,
             #       deltaRMiddleSPRange, collisionRegion, r, z, zOutermostLayers)
-            #   SeedFinderConfig settings. deltaR, deltaRBottomSP, deltaRTopSP, deltaRMiddleSPRange, collisionRegion, r, z, zOutermostLayers are ranges specified as a tuple of (min,max). beamPos is specified as (x,y).
+            #   SeedFinderConfig settings. deltaR, deltaRBottomSP, deltaRTopSP, deltaRMiddleSPRange, collisionRegion,
+            #       r, z, zOutermostLayers are ranges specified as a tuple of (min,max). beamPos is specified as (x,y).
             #       Defaults specified in Core/include/Acts/Seeding/SeedFinderConfig.hpp
             maxSeedsPerSpM=1,   # for how many seeds can one SpacePoint be the middle SpacePoint?
-            cotThetaMax=10,
-            sigmaScattering=5, # how many sigmas of scattering angle should be considered?
-            radLengthPerSeed=0.05, # average radiation lengths of material on the length of a seed. used for scattering
+            cotThetaMax=100,
+            sigmaScattering=3, # how many sigmas of scattering angle should be considered?
+            radLengthPerSeed=0.1, # average radiation lengths of material on the length of a seed. used for scattering
             minPt=150 * u.MeV,
             impactMax=impactMax,
-            rRangeMiddleSP=[[0 * u.mm, 230 * u.mm]],
+            rRangeMiddleSP=rRangeMiddleSP,
             deltaR=(deltaRMin, deltaRMax),
-            collisionRegion=(zMin/10, zMax/10), # limiting location of collision region in z
+            collisionRegion=(zMin/5, zMax/5), # limiting location of collision region in z
             r=(rMin, rMax),
             z=(zMin, zMax),
-            deltaRMiddleSPRange=(deltaRMin, deltaRMax),
-            binSizeR=0.05 * u.mm,
-            deltaZMax=5 * u.mm,
+            deltaRMiddleSPRange=(deltaRMiddleMinSPRange, deltaRMiddleMaxSPRange),
+            binSizeR=0.01 * u.mm,
+            deltaZMax=5 * u.m,
             useVariableMiddleSPRange=False,
+            deltaRBottomSP=(deltaRMin, deltaRMax),
+            deltaRTopSP=(deltaRMin, deltaRMax),
+            zOutermostLayers=(-150 * u.mm, 150 * u.mm),
+            interactionPointCut=True,
+            maxPtScattering = float("inf") * u.GeV,
+
         ),  # Set SeedFinderConfigArg parameters
 
         seedFinderOptionsArg=SeedFinderOptionsArg(
-            bFieldInZ = 1.5 * u.T,
+            bFieldInZ=1.5 * u.T, beamPos=(0.0, 0.0)
             # Set SeedFinderOptionsArg parameters
         ),
 
         seedFilterConfigArg=SeedFilterConfigArg(
-            # impactWeightFactor=1,
-            # zOriginWeightFactor=1,
-            # compatSeedWeight=999,
-            # compatSeedLimit=2,
-            # numSeedIncrement=2,
-            # seedWeightIncrement=2,
-            # seedConfirmation=False,
-            # maxSeedsPerSpMConf=999,
-            # maxQualitySeedsPerSpMConf=999,
-            # useDeltaRorTopRadius=False,
+            impactWeightFactor=100,
+            zOriginWeightFactor=None,
+            compatSeedWeight=None,
+            compatSeedLimit=3,
+            numSeedIncrement=100,
+            seedWeightIncrement=0,
+            seedConfirmation=seedConfirmation,
+            maxSeedsPerSpMConf=5,
+            maxQualitySeedsPerSpMConf=5,
+            useDeltaRorTopRadius=True,
         ),
         # seedFilterConfigArg : SeedFilterConfigArg(compatSeedWeight, compatSeedLimit, numSeedIncrement,
         #     seedWeightIncrement, seedConfirmation, maxSeedsPerSpMConf, maxQualitySeedsPerSpMConf, useDeltaRorTopRadius)
@@ -147,16 +169,23 @@ def runKalmanTrk(
         # SpacePointGridConfigArg(rMax, zBinEdges, phiBinDeflectionCoverage, phi, maxPhiBins, impactMax)
             # Defaults specified in Core/include/Acts/Seeding/SpacePointGrid.hpp
         spacePointGridConfigArg = SpacePointGridConfigArg(
+            rMax=rMax,
             deltaRMax=deltaRMax,
-            zBinEdges=[zMin, zMax],
+            zBinEdges=zBinEdges,
             phiBinDeflectionCoverage=10,
             phi=(-0.5 * math.pi, 0.5 * math.pi),
             # impactMax=impactMax,
-            maxPhiBins=10000,
+            maxPhiBins=300,
         ),
 
         # SeedingAlgorithmConfigArg(allowSeparateRMax, zBinNeighborsTop, zBinNeighborsBottom, numPhiNeighbors)
             # Defaults specified in Examples/Algorithms/TrackFinding/include/ActsExamples/TrackFinding/SeedingAlgorithm.hpp
+        seedingAlgorithmConfigArg = SeedingAlgorithmConfigArg(
+            allowSeparateRMax=False,
+            # zBinNeighborsTop=zBinNeighborsTop,
+            # zBinNeighborsBottom=zBinNeighborsBottom,
+            numPhiNeighbors=1,
+        ),
         outputDirRoot=outputDir,
         inputParticles="particles_input",
     )
@@ -221,7 +250,9 @@ if "__main__" == __name__:
     srcdir = Path(__file__).resolve().parent.parent.parent.parent       # print(srcdir)     # is /lustre/collider/zhangjunhua/Software/acts/source
     field = acts.ConstantBField(acts.Vector3(0, 0, 1.5 * u.T))
     inputDir=Path("/lustre/collider/zhangjunhua/Software/acts/run/StdSeed_Rot")
-    outputDir=Path("/lustre/collider/zhangjunhua/Software/acts/run/StdSeed_Rot")
+    outputDir=Path("/lustre/collider/zhangjunhua/Software/acts/run/StdSeed_Rot/Mar28")
+    if not outputDir.exists():
+        outputDir.mkdir()
 
     runKalmanTrk(
         trackingGeometry,
@@ -230,6 +261,6 @@ if "__main__" == __name__:
         digiConfigFile=srcdir / "Examples/Algorithms/Digitization/share/default-smearing-config-telescope.json",
         outputDir=outputDir,
         directNavigation=True,
-        reverseFilteringMomThreshold=100 * u.MeV,
+        reverseFilteringMomThreshold=1000 * u.MeV,
         inputParticlePath=inputDir / "rcl_8GeV_Mar18Particles.root",
     ).run()

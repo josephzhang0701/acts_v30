@@ -75,15 +75,21 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
   // Fill
   // bottoms
   for (const std::size_t idx : bottomSPsIdx) {
-    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
-              << "bottomSPsIdx is: " << idx << std::endl;
+    std::cout << "[In L. " <<  __LINE__ << ' ' << __func__ << " ]" << '\t'
+              << "bottomSPsIdx is: " << idx << '\t'
+              << "bottomNeighbours r, see: middleSPs.front()->radius() - m_config.deltaRMaxBottomSP ==> "
+              << middleSPs.front()->radius() << " - " << m_config.deltaRMaxBottomSP << " = " << middleSPs.front()->radius() - m_config.deltaRMaxBottomSP
+              << std::endl;
     state.bottomNeighbours.emplace_back(
         grid, idx, middleSPs.front()->radius() - m_config.deltaRMaxBottomSP);
   }
   // tops
   for (const std::size_t idx : topSPsIdx) {
-    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
-              << "topSPsIdx is: " << idx << std::endl;
+    std::cout << "[In L. " <<  __LINE__ << ' ' << __func__ << " ]" << '\t'
+              << "topSPsIdx is: " << idx << '\t'
+              << "topNeighbours r, see: middleSPs.front()->radius() + m_config.deltaRMinTopSP ==> "
+              << middleSPs.front()->radius() << " + " << m_config.deltaRMinTopSP << " = " << middleSPs.front()->radius() + m_config.deltaRMinTopSP
+              << std::endl;
     state.topNeighbours.emplace_back(
         grid, idx, middleSPs.front()->radius() + m_config.deltaRMinTopSP);
   }
@@ -105,6 +111,9 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
       auto pVal = std::lower_bound(m_config.zBinEdges.begin(),
                                    m_config.zBinEdges.end(), spM->z());
       int zBin = std::distance(m_config.zBinEdges.begin(), pVal);
+      std::cout << '\t' << '\t'
+               // << "pVal: " << *pVal << '\t'
+                << "zBin: " << zBin << std::endl;
       /// protects against zM at the limit of zBinEdges
       zBin == 0 ? zBin : --zBin;
       if (rM < m_config.rRangeMiddleSP[zBin][0]) {
@@ -132,13 +141,15 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
       continue;
     }
 
-    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+    std::cout << "=====[In " << __func__ << " ]" << '\t'
               << "space points of middle are: [" << spM->x() << '\t' << spM->y() << '\t' << spM->z() << '\t' << spM->radius() << "]" << std::endl;
 
     const float uIP = -1. / rM;
     const float cosPhiM = -spM->x() * uIP;
     const float sinPhiM = -spM->y() * uIP;
     const float uIP2 = uIP * uIP;
+
+    std::cout << "SeedFinder.ipp L.148: [" << uIP << '\t' << cosPhiM << '\t' << sinPhiM << "]" << std::endl;
 
     // Iterate over middle-top dublets
     getCompatibleDoublets<Acts::SpacePointCandidateType::eTop>(
@@ -173,7 +184,7 @@ void SeedFinder<external_spacepoint_t, platform_t>::createSeedsForGroup(
       }
     }
 
-//    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+//    std::cout << "[In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
 //        << "Range of centralSeedConfirmationRange zSeedConf: " << m_config.centralSeedConfirmationRange.zMaxSeedConf
 //              << "  to  " << m_config.centralSeedConfirmationRange.zMinSeedConf << std::endl;
 
@@ -264,18 +275,24 @@ SeedFinder<external_spacepoint_t, platform_t>::getCompatibleDoublets(
     // the iterator so we don't need to look at the other SPs again
     for (; min_itr != otherSPs.end(); ++min_itr) {
       const auto& otherSP = *min_itr;
-      std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
-        << "otherSP->radius(): " << otherSP->radius() <<'\t'
-        << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
-        << std::endl;
       if constexpr (candidateType == Acts::SpacePointCandidateType::eBottom) {
+        std::cout << "#######Find the first SP inside the radius region of interest [In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+                  << '\t' << '\t' << candidateType << " otherSP->radius(): " << otherSP->radius() <<'\t'
+                  << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
+                  << std::endl;
         // if r-distance is too big, try next SP in bin
         if ((rM - otherSP->radius()) <= deltaRMaxSP) {
+          std::cout << "SeedFinder.ipp at L. " << __LINE__ << " [rM - otherSP->radius()) <= deltaRMaxSP] is executed." << std::endl;
           break;
         }
       } else {
+        std::cout << "#######Find the first SP inside the radius region of interest [In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\n'
+                  << '\t' << '\t' << candidateType << " otherSP->radius(): " << otherSP->radius() <<'\t'
+                  << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
+                  << std::endl;
         // if r-distance is too small, try next SP in bin
         if ((otherSP->radius() - rM) >= deltaRMinSP) {
+          std::cout << "SeedFinder.ipp at L. " << __LINE__ << " [(otherSP->radius() - rM) >= deltaRMinSP] is executed." << std::endl;
           break;
         }
       }
@@ -290,16 +307,26 @@ SeedFinder<external_spacepoint_t, platform_t>::getCompatibleDoublets(
 
       if constexpr (candidateType == Acts::SpacePointCandidateType::eBottom) {
         deltaR = (rM - otherSP->radius());
-
+        std::cout << "=====update the iterator ?BOTTOM? In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+                  << candidateType << " deltaR: " << deltaR <<'\t'
+                  << "otherSP->radius(): " << otherSP->radius() <<'\t'
+                  << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
+                  << std::endl;
         // if r-distance is too small, try next SP in bin
         if (deltaR < deltaRMinSP) {
+          std::cout << "SeedFinder.ipp at L. " << __LINE__ << " [deltaR < deltaRMinSP] is executed." << std::endl;
           break;
         }
       } else {
         deltaR = (otherSP->radius() - rM);
-
+        std::cout << "=====update the iterator ?TOP? In " << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+                  << candidateType << " deltaR: " << deltaR <<'\t'
+                  << "otherSP->radius(): " << otherSP->radius() <<'\t'
+                  << otherSP->x() <<'\t'<< otherSP->y()  <<'\t'<< otherSP->z()
+                  << std::endl;
         // if r-distance is too big, try next SP in bin
         if (deltaR > deltaRMaxSP) {
+          std::cout << "SeedFinder.ipp at L. " << __LINE__ << " [deltaR > deltaRMaxSP] is executed." << std::endl;
           break;
         }
       }

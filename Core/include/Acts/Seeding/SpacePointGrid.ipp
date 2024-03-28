@@ -9,6 +9,7 @@
 #include "Acts/Utilities/detail/Axis.hpp"
 
 #include <memory>
+#include <iostream>
 
 template <typename SpacePoint>
 std::unique_ptr<Acts::SpacePointGrid<SpacePoint>>
@@ -99,6 +100,10 @@ Acts::SpacePointGridCreator::createGrid(
     if (phiBins > config.maxPhiBins) {
       phiBins = config.maxPhiBins;
     }
+    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+              << "deltaPhi is: " << deltaPhi << '\t'
+              << "No. of phiBins: " << phiBins
+              << std::endl;
   }
 
   Acts::detail::Axis<detail::AxisType::Equidistant,
@@ -117,16 +122,23 @@ Acts::SpacePointGridCreator::createGrid(
     float zBinSize = config.cotThetaMax * config.deltaRMax;
     int zBins =
         std::max(1, (int)std::floor((config.zMax - config.zMin) / zBinSize));
+    std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+              << "No. of zBins: " << zBins
+              << std::endl;
 
     for (int bin = 0; bin <= zBins; bin++) {
       AxisScalar edge =
           config.zMin + bin * ((config.zMax - config.zMin) / (float)zBins);
+      std::cout << "[In " << __FILE__ << '\t' <<  __LINE__ << '\t' << __func__ << " ]" << '\t'
+                << "AxisScalar edge: " << edge
+                << std::endl;
       zValues.push_back(edge);
     }
 
   } else {
     // Use the zBinEdges defined in the config
     for (auto& bin : config.zBinEdges) {
+//      std::cout << "Use the zBinEdges defined in the config: " << bin << std::endl;
       zValues.push_back(bin);
     }
   }
